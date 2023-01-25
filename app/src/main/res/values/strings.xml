@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">FilmApp</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="no_results">Sorry, no results!</string>
+    <string name="loading">Loading</string>
+    <string name="unknown">\?</string>
+    <string name="plot_summary">Plot Summary</string>
+    <string name="cast">Cast</string>
+    <string name="unexpected_outcome">Oops! Unexpected outcome.</string>
+    <string name="disaster">Disaster</string>
+    <string name="page_not_found">404</string>
 </resources>
