@@ -6,8 +6,10 @@ data class Film(
     val overview: String,
     val listPosterUrl: String,
     val detailsPosterUrl: String,
+    val backdropUrl: String,
     val averageVote: Double,
-    val genres: List<Genre>
+    val genres: List<Genre>,
+    val releaseDate: String
 ) {
     val genre1: String? = genres.getOrNull(0)?.name
 

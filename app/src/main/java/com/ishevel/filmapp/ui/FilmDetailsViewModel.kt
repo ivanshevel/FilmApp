@@ -1,19 +1,23 @@
 package com.ishevel.filmapp.ui
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import androidx.paging.cachedIn
 import com.ishevel.filmapp.data.ActorsRepository
 import com.ishevel.filmapp.data.FilmData
 import com.ishevel.filmapp.data.FilmsRepository
-import com.ishevel.filmapp.data.model.Film
 
 class FilmDetailsViewModel(
     private val filmsRepository: FilmsRepository,
-    private val actorsRepository: ActorsRepository,
-    private val savedStateHandle: SavedStateHandle
+    actorsRepository: ActorsRepository
 ) : ViewModel(){
 
     val selectedFilm: LiveData<FilmData> by lazy { MutableLiveData(filmsRepository.getSelectedFilm()) }
+
+    private val filmId = filmsRepository.getSelectedFilm().let { filmData ->
+        when (filmData) {
+            is FilmData.Ok -> filmData.film.id
+            is FilmData.Error -> 0
+        }
+    }
+    val actorsFlow = actorsRepository.getApiCastForFilmFlow(filmId).cachedIn(viewModelScope)
 }

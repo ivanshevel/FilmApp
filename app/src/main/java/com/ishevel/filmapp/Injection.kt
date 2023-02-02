@@ -10,20 +10,19 @@ import com.ishevel.filmapp.ui.FilmsListViewModelFactory
 
 object Injection {
 
-    private val filmsRepository: FilmsRepository by lazy {FilmsRepository(ApiService.create())}
+    private lateinit var filmsRepository: FilmsRepository
     private lateinit var actorsRepository: ActorsRepository
 
     private fun provideFilmsRepository(): FilmsRepository {
+        if (!Injection::filmsRepository.isInitialized)
+            filmsRepository = FilmsRepository(ApiService.create())
         return filmsRepository
     }
 
-    private fun provideActorsRepository():ActorsRepository {
-        if (Injection::actorsRepository.isInitialized) {
-            return actorsRepository
-        }
-        else {
-            return ActorsRepository(ApiService.create())
-        }
+    private fun provideActorsRepository(): ActorsRepository {
+        if (!Injection::actorsRepository.isInitialized)
+            actorsRepository = ActorsRepository(ApiService.create())
+        return actorsRepository
     }
 
     fun provideFilmsListViewModelFactory(owner: SavedStateRegistryOwner): ViewModelProvider.Factory {

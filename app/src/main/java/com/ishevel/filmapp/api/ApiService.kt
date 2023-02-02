@@ -1,7 +1,6 @@
 package com.ishevel.filmapp.api
 
 import com.ishevel.filmapp.BuildConfig
-import com.ishevel.filmapp.api.model.ApiConfiguration
 import com.ishevel.filmapp.api.model.ApiCredits
 import com.ishevel.filmapp.api.model.ApiGenres
 import com.ishevel.filmapp.api.model.ApiLatestFilms
@@ -9,7 +8,6 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.Level
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -18,15 +16,14 @@ import retrofit2.http.Query
 
 interface ApiService {
 
-    @GET("configuration")
-    suspend fun getConfiguration(): ApiConfiguration
+    //@GET("configuration")
+    //suspend fun getConfiguration(): ApiConfiguration
 
     @GET("genre/movie/list")
     suspend fun getGenres(): ApiGenres
 
     @GET("movie/now_playing")
     suspend fun getLatestFilms(
-        @Query("q") query: String,
         @Query("page") page: Int
     ): ApiLatestFilms
 
@@ -35,6 +32,8 @@ interface ApiService {
 
     companion object {
         private const val BASE_URL = "https://api.themoviedb.org/3/"
+
+
 
         fun create(): ApiService {
             val logger = HttpLoggingInterceptor()

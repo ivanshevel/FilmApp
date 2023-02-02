@@ -1,23 +1,20 @@
 package com.ishevel.filmapp.ui
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.distinctUntilChanged
-import androidx.lifecycle.map
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import com.ishevel.filmapp.Injection
-import com.ishevel.filmapp.data.SearchResult
 import com.ishevel.filmapp.databinding.FragmentFilmsListBinding
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 class FilmsListFragment : Fragment() {
@@ -26,81 +23,66 @@ class FilmsListFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         super.onCreate(savedInstanceState)
         val binding = FragmentFilmsListBinding.inflate(inflater, container, false)
         val viewModel = ViewModelProvider(this, Injection.provideFilmsListViewModelFactory(owner = this))
             .get(FilmsListViewModel::class.java)
 
-        binding.bindState(viewModel)
+        binding.bindRecyclerView(viewModel)
+        observeFilmSelected(viewModel)
 
         return binding.root
     }
 
-    private fun FragmentFilmsListBinding.bindState(
-        viewModel : FilmsListViewModel
+    private fun FragmentFilmsListBinding.bindRecyclerView(
+        viewModel: FilmsListViewModel
     ) {
         val filmAdapter = FilmAdapter(viewModel::onFilmClicked)
-        filmsRecyclerView.adapter = filmAdapter
-
-        bindList(
-            adapter = filmAdapter,
-            uiState = viewModel.state,
-            onScrollChanged = viewModel.accept
+        filmsRecyclerView.adapter = filmAdapter.withLoadStateHeaderAndFooter(
+            header = FilmsLoadStateAdapter { filmAdapter.retry() },
+            footer = FilmsLoadStateAdapter { filmAdapter.retry() }
         )
-    }
 
-    private fun FragmentFilmsListBinding.bindList(
-        adapter: FilmAdapter,
-        uiState: LiveData<UiState>,
-        onScrollChanged: (UiAction.Scroll) -> Unit
-    ) {
-        setupScrollListener(onScrollChanged)
+        retryButton.setOnClickListener { filmAdapter.retry() }
 
-        uiState
-            .map(UiState::searchResult)
-            .distinctUntilChanged()
-            .observe(this@FilmsListFragment.viewLifecycleOwner) { result ->
-                when (result) {
-                    is SearchResult.Success -> {
-                        showEmptyList(result.data.isEmpty())
-                        adapter.submitList(result.data)
-                    }
-                    is SearchResult.Error -> {
-                        Toast.makeText(
-                            this@FilmsListFragment.requireActivity(),
-                            "\uD83D\uDE28 Wooops $result.message}",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.filmsFlow.collectLatest { pagingData ->
+                filmAdapter.submitData(pagingData)
+            }
+        }
+
+        lifecycleScope.launch {
+            filmAdapter.loadStateFlow.collect { loadState ->
+                val isListEmpty = loadState.refresh is LoadState.NotLoading && filmAdapter.itemCount == 0
+                filmsRecyclerView.isVisible = !isListEmpty
+                progressBar.isVisible = loadState.source.refresh is LoadState.Loading
+                retryButton.isVisible = loadState.source.refresh is LoadState.Error
+                errorMsg.text = (loadState.refresh as? LoadState.Error)?.error?.message
+                errorMsg.isVisible = loadState.source.refresh is LoadState.Error
+
+                val errorState = loadState.source.append as? LoadState.Error
+                    ?: loadState.source.prepend as? LoadState.Error
+                    ?: loadState.append as? LoadState.Error
+                    ?: loadState.prepend as? LoadState.Error
+                errorState?.let {
+                    Toast.makeText(
+                        activity,
+                        "\uD83D\uDE28 Whoops ${it.error}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
+        }
     }
 
-    private fun FragmentFilmsListBinding.showEmptyList(show: Boolean) {
-        emptyRecyclerView.isVisible = show
-        filmsRecyclerView.isVisible = !show
-    }
-
-    private fun FragmentFilmsListBinding.setupScrollListener(
-        onScrollChanged: (UiAction.Scroll) -> Unit
-    ) {
-        val layoutManager = filmsRecyclerView.layoutManager as LinearLayoutManager
-        filmsRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val totalItemCount = layoutManager.itemCount
-                val visibleItemCount = layoutManager.childCount
-                val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
-
-                onScrollChanged(
-                    UiAction.Scroll(
-                        visibleItemCount = visibleItemCount,
-                        lastVisibleItemPosition = lastVisibleItem,
-                        totalItemCount = totalItemCount
-                    )
-                )
+    private fun observeFilmSelected(viewModel: FilmsListViewModel) {
+        viewModel.filmSelected.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let {
+                val action =
+                    FilmsListFragmentDirections.actionFilmsListFragmentToFilmDetailsFragment()
+                findNavController().navigate(action)
             }
-        })
+        }
     }
 }

@@ -1,14 +1,15 @@
 package com.ishevel.filmapp.ui
 
-import android.graphics.drawable.BitmapDrawable
+import android.graphics.Rect
 import android.os.Bundle
-import android.util.Log
+import android.util.TypedValue
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
-import androidx.palette.graphics.Palette
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.load
 import coil.request.ImageRequest
@@ -16,6 +17,8 @@ import com.ishevel.filmapp.Injection
 import com.ishevel.filmapp.R
 import com.ishevel.filmapp.data.FilmData
 import com.ishevel.filmapp.databinding.FragmentFilmDetailsBinding
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 class FilmDetailsFragment : Fragment() {
@@ -24,7 +27,7 @@ class FilmDetailsFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         super.onCreate(savedInstanceState)
         val binding = FragmentFilmDetailsBinding.inflate(inflater, container, false)
         val viewModel = ViewModelProvider(this, Injection.provideFilmDetailsViewModelFactory(owner = this))
@@ -33,7 +36,6 @@ class FilmDetailsFragment : Fragment() {
         with(binding) {
             val loader = ImageLoader(requireContext())
             viewModel.selectedFilm.observe(viewLifecycleOwner) {
-                Log.d("2/Selected film is: ","${it.toString()}")
                 when (it) {
                     is FilmData.Ok -> processOk(it, loader)
                     is FilmData.Error -> processError()
@@ -41,7 +43,42 @@ class FilmDetailsFragment : Fragment() {
             }
         }
 
+        binding.bindCastRecyclerView(viewModel)
+
         return binding.root
+    }
+
+    private fun FragmentFilmDetailsBinding.bindCastRecyclerView(
+        viewModel: FilmDetailsViewModel
+    ) {
+        val actorAdapter = ActorAdapter()
+
+        actorsRecyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
+            val rightOffset = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                24f,
+                requireContext().resources.displayMetrics
+            ).toInt()
+
+            override fun getItemOffsets(
+                outRect: Rect,
+                view: View,
+                parent: RecyclerView,
+                state: RecyclerView.State
+            ) {
+                outRect.right = rightOffset
+            }
+        })
+        actorsRecyclerView.adapter = actorAdapter.withLoadStateHeaderAndFooter(
+            header = FilmsLoadStateAdapter { actorAdapter.retry() },
+            footer = FilmsLoadStateAdapter { actorAdapter.retry() }
+        )
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.actorsFlow.collectLatest { pagingData ->
+                actorAdapter.submitData(pagingData)
+            }
+        }
     }
 
     private fun FragmentFilmDetailsBinding.processError() {
@@ -57,16 +94,16 @@ class FilmDetailsFragment : Fragment() {
     ) {
         ok.film.run {
             val request = ImageRequest.Builder(requireContext())
-                .data(listPosterUrl) // demo link
+                .data(backdropUrl) // demo link
                 .allowHardware(false)
                 .target { result ->
                     posterImageView.setImageDrawable(result)
-                    val bitmap = (result as BitmapDrawable).bitmap
-                    Palette.from(bitmap).generate { palette ->
-                        palette?.vibrantSwatch?.let { swatch ->
-                            root.setBackgroundColor(swatch.rgb)
-                        }
-                    }
+//                    val bitmap = (result as BitmapDrawable).bitmap
+//                    Palette.from(bitmap).generate { palette ->
+//                        palette?.vibrantSwatch?.let { swatch ->
+//                            root.setBackgroundColor(swatch.rgb)
+//                        }
+//                    }
                 }
                 .build()
             loader.enqueue(request)

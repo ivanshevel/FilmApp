@@ -12,14 +12,14 @@ class FilmsListViewModelFactory(
     private val repository: FilmsRepository
 ) : AbstractSavedStateViewModelFactory(owner, null) {
 
-    override fun <T : ViewModel?> create(
+    override fun <T : ViewModel> create(
         key: String,
         modelClass: Class<T>,
         handle: SavedStateHandle
     ): T {
         if (modelClass.isAssignableFrom(FilmsListViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return FilmsListViewModel(repository, handle) as T
+            return FilmsListViewModel(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
@@ -31,14 +31,14 @@ class FilmDetailsViewModelFactory(
     private val actorsRepository: ActorsRepository
 ) : AbstractSavedStateViewModelFactory(owner, null) {
 
-    override fun <T : ViewModel?> create(
+    override fun <T : ViewModel> create(
         key: String,
         modelClass: Class<T>,
         handle: SavedStateHandle
     ): T {
         if (modelClass.isAssignableFrom(FilmDetailsViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return FilmDetailsViewModel(filmsRepository, actorsRepository, handle) as T
+            return FilmDetailsViewModel(filmsRepository, actorsRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

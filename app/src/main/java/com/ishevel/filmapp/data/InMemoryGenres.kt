@@ -7,14 +7,12 @@ import com.ishevel.filmapp.data.model.Genres
 
 class InMemoryGenres constructor(private val service: ApiService) : Genres {
 
-    lateinit var genres: List<Genre>
+    private lateinit var genres: List<Genre>
 
     override suspend fun get(): List<Genre> {
         if (!::genres.isInitialized) {
             mapGenres(service.getGenres()).also { result ->
-                genres = if (!result.isEmpty()) {
-                    result
-                } else {
+                genres = result.ifEmpty {
                     emptyList()
                 }
             }

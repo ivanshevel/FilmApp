@@ -12,6 +12,10 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
-        <item name="android:colorBackground">@color/custom_background_grey</item>
+        <item name="android:colorBackground">@color/custom_background_light_grey</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.FilmApp.MediumComponent</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.FilmApp.SmallComponent</item>
+        <item name="shapeAppearanceHuge">@style/ShapeAppearance.FilmApp.Huge</item>
+        <item name="shapeAppearanceProfile">@style/ShapeAppearance.FilmApp.Tiny</item>
     </style>
 </resources>

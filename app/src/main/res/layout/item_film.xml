@@ -12,7 +12,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        tools:backgroundTint="@android:color/darker_gray">
+        tools:backgroundTint="@color/custom_background_grey">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -96,6 +96,18 @@
                 app:layout_constraintStart_toStartOf="@+id/titleTextView"
                 app:layout_constraintTop_toBottomOf="@+id/genre1TextView"
                 tools:text="9.3" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/releaseDateTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?textAppearanceBody1"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/averageVoteTextView"
+                app:layout_constraintTop_toBottomOf="@+id/genre2TextView"
+                tools:text="Release date" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
