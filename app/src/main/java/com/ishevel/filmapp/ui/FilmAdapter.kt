@@ -39,7 +39,11 @@ class FilmAdapter(private val onClick: (Film) -> Unit) :
                 oldItem.id == newItem.id
 
             override fun areContentsTheSame(oldItem: Film, newItem: Film): Boolean =
-                oldItem.title == newItem.title
+                oldItem.title == newItem.title &&
+                        oldItem.listPosterUrl == newItem.listPosterUrl &&
+                        oldItem.averageVote == newItem.averageVote &&
+                        oldItem.genre1 == newItem.genre1 &&
+                        oldItem.genre2 == newItem.genre2
         }
     }
 }
