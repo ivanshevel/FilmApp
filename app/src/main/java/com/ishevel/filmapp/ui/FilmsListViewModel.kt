@@ -4,8 +4,11 @@ import androidx.lifecycle.*
 import androidx.paging.cachedIn
 import com.ishevel.filmapp.data.FilmsRepository
 import com.ishevel.filmapp.data.model.Film
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class FilmsListViewModel(
+@HiltViewModel
+class FilmsListViewModel @Inject constructor(
     private val filmsRepository: FilmsRepository
 ) : ViewModel() {
 

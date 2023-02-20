@@ -7,17 +7,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
-import com.ishevel.filmapp.Injection
 import com.ishevel.filmapp.databinding.FragmentFilmsListBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-
+@AndroidEntryPoint
 class FilmsListFragment : Fragment() {
+
+    private val viewModel: FilmsListViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,8 +28,6 @@ class FilmsListFragment : Fragment() {
     ): View {
         super.onCreate(savedInstanceState)
         val binding = FragmentFilmsListBinding.inflate(inflater, container, false)
-        val viewModel = ViewModelProvider(this, Injection.provideFilmsListViewModelFactory(owner = this))
-            .get(FilmsListViewModel::class.java)
 
         binding.bindRecyclerView(viewModel)
         observeFilmSelected(viewModel)

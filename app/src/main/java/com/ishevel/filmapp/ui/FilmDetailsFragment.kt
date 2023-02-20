@@ -7,21 +7,23 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.load
 import coil.request.ImageRequest
-import com.ishevel.filmapp.Injection
 import com.ishevel.filmapp.R
 import com.ishevel.filmapp.data.FilmData
 import com.ishevel.filmapp.databinding.FragmentFilmDetailsBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-
+@AndroidEntryPoint
 class FilmDetailsFragment : Fragment() {
+
+    private val viewModel: FilmDetailsViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,8 +32,6 @@ class FilmDetailsFragment : Fragment() {
     ): View {
         super.onCreate(savedInstanceState)
         val binding = FragmentFilmDetailsBinding.inflate(inflater, container, false)
-        val viewModel = ViewModelProvider(this, Injection.provideFilmDetailsViewModelFactory(owner = this))
-            .get(FilmDetailsViewModel::class.java)
 
         with(binding) {
             val loader = ImageLoader(requireContext())
@@ -94,16 +94,10 @@ class FilmDetailsFragment : Fragment() {
     ) {
         ok.film.run {
             val request = ImageRequest.Builder(requireContext())
-                .data(backdropUrl) // demo link
+                .data(backdropUrl)
                 .allowHardware(false)
                 .target { result ->
                     posterImageView.setImageDrawable(result)
-//                    val bitmap = (result as BitmapDrawable).bitmap
-//                    Palette.from(bitmap).generate { palette ->
-//                        palette?.vibrantSwatch?.let { swatch ->
-//                            root.setBackgroundColor(swatch.rgb)
-//                        }
-//                    }
                 }
                 .build()
             loader.enqueue(request)

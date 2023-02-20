@@ -6,8 +6,13 @@ import androidx.paging.PagingData
 import com.ishevel.filmapp.api.ApiService
 import com.ishevel.filmapp.data.model.Film
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class FilmsRepository(private val service: ApiService) {
+@Singleton
+class FilmsRepository @Inject constructor(
+    private val service: ApiService
+    ) {
 
     private var selectedFilm: Film? = null
 

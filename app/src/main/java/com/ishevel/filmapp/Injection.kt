@@ -1,35 +1,39 @@
 package com.ishevel.filmapp
 
-import androidx.lifecycle.ViewModelProvider
-import androidx.savedstate.SavedStateRegistryOwner
+import com.ishevel.filmapp.api.ApiKeyInterceptor
 import com.ishevel.filmapp.api.ApiService
-import com.ishevel.filmapp.data.ActorsRepository
-import com.ishevel.filmapp.data.FilmsRepository
-import com.ishevel.filmapp.ui.FilmDetailsViewModelFactory
-import com.ishevel.filmapp.ui.FilmsListViewModelFactory
+import com.ishevel.filmapp.api.BASE_URL
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Singleton
 
-object Injection {
+@Module
+@InstallIn(SingletonComponent::class)
+object ApiClient {
 
-    private lateinit var filmsRepository: FilmsRepository
-    private lateinit var actorsRepository: ActorsRepository
+    @Provides
+    @Singleton
+    fun create(): ApiService {
+        val logger = HttpLoggingInterceptor()
+        logger.level = HttpLoggingInterceptor.Level.BODY
+        val keyHolder = ApiKeyInterceptor(BuildConfig.API_KEY)
 
-    private fun provideFilmsRepository(): FilmsRepository {
-        if (!Injection::filmsRepository.isInitialized)
-            filmsRepository = FilmsRepository(ApiService.create())
-        return filmsRepository
-    }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(logger)
+            .addInterceptor(keyHolder)
+            .build()
 
-    private fun provideActorsRepository(): ActorsRepository {
-        if (!Injection::actorsRepository.isInitialized)
-            actorsRepository = ActorsRepository(ApiService.create())
-        return actorsRepository
-    }
-
-    fun provideFilmsListViewModelFactory(owner: SavedStateRegistryOwner): ViewModelProvider.Factory {
-        return FilmsListViewModelFactory(owner, provideFilmsRepository())
-    }
-
-    fun provideFilmDetailsViewModelFactory(owner: SavedStateRegistryOwner): ViewModelProvider.Factory {
-        return FilmDetailsViewModelFactory(owner, provideFilmsRepository(), provideActorsRepository())
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ApiService::class.java)
     }
 }

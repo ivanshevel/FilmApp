@@ -6,8 +6,13 @@ import androidx.paging.PagingData
 import com.ishevel.filmapp.api.ApiService
 import com.ishevel.filmapp.data.model.Actor
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class ActorsRepository(private val service: ApiService) {
+@Singleton
+class ActorsRepository @Inject constructor(
+    private val service: ApiService
+    ) {
 
     fun getApiCastForFilmFlow(filmId: Int) : Flow<PagingData<Actor>> {
 
