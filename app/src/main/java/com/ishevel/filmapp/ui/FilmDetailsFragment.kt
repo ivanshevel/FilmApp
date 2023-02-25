@@ -30,7 +30,7 @@ class FilmDetailsFragment : Fragment() {
     ): View {
         super.onCreate(savedInstanceState)
         val binding = FragmentFilmDetailsBinding.inflate(inflater, container, false)
-        val viewModel = ViewModelProvider(this, Injection.provideFilmDetailsViewModelFactory(owner = this))
+        val viewModel = ViewModelProvider(this, Injection.provideFilmDetailsViewModelFactory(owner = this, requireActivity().applicationContext))
             .get(FilmDetailsViewModel::class.java)
 
         with(binding) {
@@ -98,12 +98,6 @@ class FilmDetailsFragment : Fragment() {
                 .allowHardware(false)
                 .target { result ->
                     posterImageView.setImageDrawable(result)
-//                    val bitmap = (result as BitmapDrawable).bitmap
-//                    Palette.from(bitmap).generate { palette ->
-//                        palette?.vibrantSwatch?.let { swatch ->
-//                            root.setBackgroundColor(swatch.rgb)
-//                        }
-//                    }
                 }
                 .build()
             loader.enqueue(request)

@@ -26,7 +26,7 @@ class FilmsListFragment : Fragment() {
     ): View {
         super.onCreate(savedInstanceState)
         val binding = FragmentFilmsListBinding.inflate(inflater, container, false)
-        val viewModel = ViewModelProvider(this, Injection.provideFilmsListViewModelFactory(owner = this))
+        val viewModel = ViewModelProvider(this, Injection.provideFilmsListViewModelFactory(owner = this, requireActivity().applicationContext))
             .get(FilmsListViewModel::class.java)
 
         binding.bindRecyclerView(viewModel)
@@ -39,8 +39,7 @@ class FilmsListFragment : Fragment() {
         viewModel: FilmsListViewModel
     ) {
         val filmAdapter = FilmAdapter(viewModel::onFilmClicked)
-        filmsRecyclerView.adapter = filmAdapter.withLoadStateHeaderAndFooter(
-            header = FilmsLoadStateAdapter { filmAdapter.retry() },
+        filmsRecyclerView.adapter = filmAdapter.withLoadStateFooter(
             footer = FilmsLoadStateAdapter { filmAdapter.retry() }
         )
 
@@ -54,12 +53,12 @@ class FilmsListFragment : Fragment() {
 
         lifecycleScope.launch {
             filmAdapter.loadStateFlow.collect { loadState ->
-                val isListEmpty = loadState.refresh is LoadState.NotLoading && filmAdapter.itemCount == 0
+                val isListEmpty = loadState.mediator?.refresh is LoadState.NotLoading && filmAdapter.itemCount == 0
                 filmsRecyclerView.isVisible = !isListEmpty
-                progressBar.isVisible = loadState.source.refresh is LoadState.Loading
-                retryButton.isVisible = loadState.source.refresh is LoadState.Error
-                errorMsg.text = (loadState.refresh as? LoadState.Error)?.error?.message
-                errorMsg.isVisible = loadState.source.refresh is LoadState.Error
+                progressBar.isVisible = loadState.mediator?.refresh is LoadState.Loading
+                retryButton.isVisible = loadState.mediator?.refresh is LoadState.Error
+                errorMsg.text = (loadState.mediator?.refresh as? LoadState.Error)?.error?.message
+                errorMsg.isVisible = loadState.mediator?.refresh is LoadState.Error
 
                 val errorState = loadState.source.append as? LoadState.Error
                     ?: loadState.source.prepend as? LoadState.Error
