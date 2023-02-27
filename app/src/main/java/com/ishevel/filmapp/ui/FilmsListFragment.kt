@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -26,7 +25,7 @@ class FilmsListFragment : Fragment() {
     ): View {
         super.onCreate(savedInstanceState)
         val binding = FragmentFilmsListBinding.inflate(inflater, container, false)
-        val viewModel = ViewModelProvider(this, Injection.provideFilmsListViewModelFactory(owner = this, requireActivity().applicationContext))
+        val viewModel = ViewModelProvider(this, Injection.provideViewModelFactory(owner = this, requireActivity().applicationContext))
             .get(FilmsListViewModel::class.java)
 
         binding.bindRecyclerView(viewModel)
@@ -56,21 +55,9 @@ class FilmsListFragment : Fragment() {
                 val isListEmpty = loadState.mediator?.refresh is LoadState.NotLoading && filmAdapter.itemCount == 0
                 filmsRecyclerView.isVisible = !isListEmpty
                 progressBar.isVisible = loadState.mediator?.refresh is LoadState.Loading
-                retryButton.isVisible = loadState.mediator?.refresh is LoadState.Error
+                retryButton.isVisible = (loadState.mediator?.refresh is LoadState.Error && loadState.source.refresh is LoadState.NotLoading && filmAdapter.itemCount == 0)
                 errorMsg.text = (loadState.mediator?.refresh as? LoadState.Error)?.error?.message
-                errorMsg.isVisible = loadState.mediator?.refresh is LoadState.Error
-
-                val errorState = loadState.source.append as? LoadState.Error
-                    ?: loadState.source.prepend as? LoadState.Error
-                    ?: loadState.append as? LoadState.Error
-                    ?: loadState.prepend as? LoadState.Error
-                errorState?.let {
-                    Toast.makeText(
-                        activity,
-                        "\uD83D\uDE28 Whoops ${it.error}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+                errorMsg.isVisible = (loadState.mediator?.refresh is LoadState.Error && loadState.source.refresh is LoadState.NotLoading && filmAdapter.itemCount == 0)
             }
         }
     }

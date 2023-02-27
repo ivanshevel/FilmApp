@@ -30,7 +30,7 @@ class FilmDetailsFragment : Fragment() {
     ): View {
         super.onCreate(savedInstanceState)
         val binding = FragmentFilmDetailsBinding.inflate(inflater, container, false)
-        val viewModel = ViewModelProvider(this, Injection.provideFilmDetailsViewModelFactory(owner = this, requireActivity().applicationContext))
+        val viewModel = ViewModelProvider(this, Injection.provideViewModelFactory(owner = this, requireActivity().applicationContext))
             .get(FilmDetailsViewModel::class.java)
 
         with(binding) {
@@ -41,6 +41,13 @@ class FilmDetailsFragment : Fragment() {
                     is FilmData.Error -> processError()
                 }
             }
+            var favoriteStatus = false
+
+            viewModel.isFavoriteFilm.observe(viewLifecycleOwner) {
+                favoriteStatus = it
+                changeFavIcon(favoriteStatus)
+            }
+            favIcon.setOnClickListener { viewModel.changeFavoriteStatus(favoriteStatus) }
         }
 
         binding.bindCastRecyclerView(viewModel)
@@ -111,6 +118,16 @@ class FilmDetailsFragment : Fragment() {
             } else ""
             averageVoteTextView.text = rating
             plotTextView.text = overview
+        }
+    }
+
+    private fun FragmentFilmDetailsBinding.changeFavIcon(
+        status: Boolean
+    ) {
+        if (!status) {
+            favIcon.load(R.drawable.favorite_40px)
+        } else {
+            favIcon.load(R.drawable.favorite_40px_filled)
         }
     }
 }

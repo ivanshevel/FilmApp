@@ -6,6 +6,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.ishevel.filmapp.api.ApiService
 import com.ishevel.filmapp.data.model.Film
+import com.ishevel.filmapp.data.model.FilmFavorite
 import com.ishevel.filmapp.local.AppDatabase
 import kotlinx.coroutines.flow.Flow
 
@@ -15,6 +16,7 @@ class FilmsRepository(
     ) {
 
     private var selectedFilm: Film? = null
+    private var selectedFavoriteFilm: Film? = null
 
     @OptIn(ExperimentalPagingApi::class)
     fun getApiLatestFilmsFlow(): Flow<PagingData<Film>> {
@@ -30,12 +32,37 @@ class FilmsRepository(
         ).flow
     }
 
+    fun getFavoriteFilmsFlow(): Flow<List<Film>> {
+        return database.getFilmsFavoritesDao().getFavoriteFilms()
+    }
+
     fun setSelectedFilm(film: Film) {
         selectedFilm = film
     }
 
     fun getSelectedFilm(): FilmData {
         return selectedFilm?.let { FilmData.Ok(it) } ?: FilmData.Error
+    }
+
+    fun setSelectedFavoriteFilm(film: Film) {
+        selectedFavoriteFilm = film
+    }
+
+    fun getSelectedFavoriteFilm(): FilmData {
+        return selectedFavoriteFilm?.let { FilmData.Ok(it) } ?: FilmData.Error
+    }
+
+    suspend fun addFavoriteFilm(id: Int) {
+        val favoriteFilm = FilmFavorite(filmId = id)
+        database.getFilmsFavoritesDao().addFavoriteFilm(favoriteFilm)
+    }
+
+    suspend fun deleteFavoriteFilm(id: Int) {
+        database.getFilmsFavoritesDao().deleteFavoriteFilm(id)
+    }
+
+    fun isFavoriteFilm(id: Int): Flow<Boolean> {
+        return database.getFilmsFavoritesDao().isFavorite(id)
     }
 
     companion object {

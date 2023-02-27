@@ -7,8 +7,7 @@ import com.ishevel.filmapp.api.ApiService
 import com.ishevel.filmapp.data.ActorsRepository
 import com.ishevel.filmapp.data.FilmsRepository
 import com.ishevel.filmapp.local.AppDatabase
-import com.ishevel.filmapp.ui.FilmDetailsViewModelFactory
-import com.ishevel.filmapp.ui.FilmsListViewModelFactory
+import com.ishevel.filmapp.ui.ViewModelFactory
 
 object Injection {
 
@@ -27,11 +26,7 @@ object Injection {
         return actorsRepository
     }
 
-    fun provideFilmsListViewModelFactory(owner: SavedStateRegistryOwner, context: Context): ViewModelProvider.Factory {
-        return FilmsListViewModelFactory(owner, provideFilmsRepository(context))
-    }
-
-    fun provideFilmDetailsViewModelFactory(owner: SavedStateRegistryOwner, context: Context): ViewModelProvider.Factory {
-        return FilmDetailsViewModelFactory(owner, provideFilmsRepository(context), provideActorsRepository())
+    fun provideViewModelFactory(owner: SavedStateRegistryOwner, context: Context): ViewModelProvider.Factory {
+        return ViewModelFactory(owner, provideFilmsRepository(context), provideActorsRepository())
     }
 }

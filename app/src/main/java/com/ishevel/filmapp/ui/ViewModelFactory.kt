@@ -7,25 +7,7 @@ import androidx.savedstate.SavedStateRegistryOwner
 import com.ishevel.filmapp.data.ActorsRepository
 import com.ishevel.filmapp.data.FilmsRepository
 
-class FilmsListViewModelFactory(
-    owner: SavedStateRegistryOwner,
-    private val repository: FilmsRepository
-) : AbstractSavedStateViewModelFactory(owner, null) {
-
-    override fun <T : ViewModel> create(
-        key: String,
-        modelClass: Class<T>,
-        handle: SavedStateHandle
-    ): T {
-        if (modelClass.isAssignableFrom(FilmsListViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return FilmsListViewModel(repository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
-
-class FilmDetailsViewModelFactory(
+class ViewModelFactory(
     owner: SavedStateRegistryOwner,
     private val filmsRepository: FilmsRepository,
     private val actorsRepository: ActorsRepository
@@ -36,9 +18,15 @@ class FilmDetailsViewModelFactory(
         modelClass: Class<T>,
         handle: SavedStateHandle
     ): T {
-        if (modelClass.isAssignableFrom(FilmDetailsViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(FilmsListViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return FilmsListViewModel(filmsRepository) as T
+        } else if (modelClass.isAssignableFrom(FilmDetailsViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return FilmDetailsViewModel(filmsRepository, actorsRepository) as T
+        } else if (modelClass.isAssignableFrom(FilmFavoritesViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return FilmFavoritesViewModel(filmsRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

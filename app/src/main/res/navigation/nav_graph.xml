@@ -13,10 +13,32 @@
         <action
             android:id="@+id/action_filmsListFragment_to_filmDetailsFragment"
             app:destination="@id/filmDetailsFragment" />
+        <action
+            android:id="@+id/action_filmsListFragment_to_filmsFavoritesFragment"
+            app:destination="@id/filmsFavoritesFragment" />
     </fragment>
     <fragment
         android:id="@+id/filmDetailsFragment"
         android:name="com.ishevel.filmapp.ui.FilmDetailsFragment"
         android:label="fragment_film_details"
-        tools:layout="@layout/fragment_film_details" />
+        tools:layout="@layout/fragment_film_details" >
+        <action
+            android:id="@+id/action_filmDetailsFragment_to_filmsFavoritesFragment"
+            app:destination="@id/filmsFavoritesFragment" />
+        <action
+            android:id="@+id/action_filmDetailsFragment_to_filmsListFragment"
+            app:destination="@id/filmsListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/filmsFavoritesFragment"
+        android:name="com.ishevel.filmapp.ui.FilmsFavoritesFragment"
+        android:label="fragment_films_favorites"
+        tools:layout="@layout/fragment_films_list" >
+        <action
+            android:id="@+id/action_filmsFavoritesFragment_to_filmDetailsFragment"
+            app:destination="@id/filmDetailsFragment" />
+        <action
+            android:id="@+id/action_filmsFavoritesFragment_to_filmsListFragment"
+            app:destination="@id/filmsListFragment" />
+    </fragment>
 </navigation>

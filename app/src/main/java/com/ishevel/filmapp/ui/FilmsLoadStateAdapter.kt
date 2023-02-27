@@ -25,16 +25,16 @@ class FilmsLoadStateViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     init {
-        binding.retryButton.setOnClickListener { retry() }
+        binding.footerRetryButton.setOnClickListener { retry() }
     }
 
     fun bind(loadState: LoadState) {
         if (loadState is LoadState.Error) {
-            binding.errorMsg.text = loadState.error.localizedMessage
+            binding.footerErrorMsg.text = loadState.error.localizedMessage
         }
-        binding.progressBar.isVisible = loadState is LoadState.Loading
-        binding.retryButton.isVisible = loadState is LoadState.Error
-        binding.errorMsg.isVisible = loadState is LoadState.Error
+        binding.footerProgressBar.isVisible = loadState is LoadState.Loading
+        binding.footerErrorMsg.isVisible = loadState is LoadState.Error
+        binding.footerErrorMsg.isVisible = loadState is LoadState.Error
     }
 
         companion object {

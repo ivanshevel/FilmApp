@@ -5,6 +5,7 @@ import androidx.paging.cachedIn
 import com.ishevel.filmapp.data.ActorsRepository
 import com.ishevel.filmapp.data.FilmData
 import com.ishevel.filmapp.data.FilmsRepository
+import kotlinx.coroutines.launch
 
 class FilmDetailsViewModel(
     private val filmsRepository: FilmsRepository,
@@ -19,5 +20,15 @@ class FilmDetailsViewModel(
             is FilmData.Error -> 0
         }
     }
+
+    val isFavoriteFilm: LiveData<Boolean> = filmsRepository.isFavoriteFilm(filmId).asLiveData()
     val actorsFlow = actorsRepository.getApiCastForFilmFlow(filmId).cachedIn(viewModelScope)
+
+    fun changeFavoriteStatus(status: Boolean) = viewModelScope.launch {
+        if (!status) {
+            filmsRepository.addFavoriteFilm(filmId)
+        } else {
+            filmsRepository.deleteFavoriteFilm(filmId)
+        }
+    }
 }

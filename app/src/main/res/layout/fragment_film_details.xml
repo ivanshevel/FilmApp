@@ -42,6 +42,19 @@
             tools:background="@android:color/holo_orange_light"
             tools:srcCompat="@drawable/no_film" />
 
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/favIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="64dp"
+            android:elevation="1dp"
+            android:src="@drawable/favorite_40px"
+            app:layout_constraintBottom_toTopOf="@+id/plotTitleTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/genresTextView"
+            tools:background="@android:color/holo_orange_light"
+            tools:srcCompat="@drawable/favorite_40px" />
+
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/titleTextView"
             android:layout_width="0dp"

@@ -1,10 +1,7 @@
 package com.ishevel.filmapp.local
 
 import androidx.paging.PagingSource
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.ishevel.filmapp.data.model.Film
 
 @Dao
@@ -16,6 +13,7 @@ interface FilmDao {
     @Query("SELECT * FROM films ORDER BY page ASC, rating DESC")
     fun getFilms(): PagingSource<Int, Film>
 
-    @Query("DELETE FROM films")
+    @Transaction
+    @Query("DELETE FROM films WHERE NOT id IN (SELECT DISTINCT(film_id) FROM films_favorites)")
     suspend fun clearAll()
 }

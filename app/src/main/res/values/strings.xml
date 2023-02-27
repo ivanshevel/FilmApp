@@ -11,4 +11,6 @@
     <string name="disaster">Disaster</string>
     <string name="page_not_found">404</string>
     <string name="retry">Retry</string>
+    <string name="bottom_menu_item_1">Home</string>
+    <string name="bottom_menu_item_2">Favorites</string>
 </resources>

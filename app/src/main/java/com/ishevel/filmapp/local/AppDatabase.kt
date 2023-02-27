@@ -6,14 +6,16 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.ishevel.filmapp.data.model.Film
+import com.ishevel.filmapp.data.model.FilmFavorite
 import com.ishevel.filmapp.data.remoteKeys.FilmRemoteKeys
 
-@Database(entities = [Film::class, FilmRemoteKeys::class], version = 1, exportSchema = false)
+@Database(entities = [Film::class, FilmRemoteKeys::class, FilmFavorite::class], version = 2, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {
 
     abstract fun getFilmsDao(): FilmDao
     abstract fun getFilmsRemoteKeysDao(): FilmRemoteKeysDao
+    abstract fun getFilmsFavoritesDao(): FilmFavoritesDao
 
     companion object {
 
