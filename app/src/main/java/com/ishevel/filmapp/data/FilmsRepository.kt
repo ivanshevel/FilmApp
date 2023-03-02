@@ -16,7 +16,6 @@ class FilmsRepository(
     ) {
 
     private var selectedFilm: Film? = null
-    private var selectedFavoriteFilm: Film? = null
 
     @OptIn(ExperimentalPagingApi::class)
     fun getApiLatestFilmsFlow(): Flow<PagingData<Film>> {
@@ -42,14 +41,6 @@ class FilmsRepository(
 
     fun getSelectedFilm(): FilmData {
         return selectedFilm?.let { FilmData.Ok(it) } ?: FilmData.Error
-    }
-
-    fun setSelectedFavoriteFilm(film: Film) {
-        selectedFavoriteFilm = film
-    }
-
-    fun getSelectedFavoriteFilm(): FilmData {
-        return selectedFavoriteFilm?.let { FilmData.Ok(it) } ?: FilmData.Error
     }
 
     suspend fun addFavoriteFilm(id: Int) {

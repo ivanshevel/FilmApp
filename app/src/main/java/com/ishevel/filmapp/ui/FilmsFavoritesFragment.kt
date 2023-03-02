@@ -6,8 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ishevel.filmapp.Injection
+import com.ishevel.filmapp.MainActivity
 import com.ishevel.filmapp.databinding.FragmentFilmsFavoritesBinding
 
 class FilmsFavoritesFragment: Fragment() {
@@ -23,8 +25,15 @@ class FilmsFavoritesFragment: Fragment() {
             .get(FilmFavoritesViewModel::class.java)
 
         binding.bindRecyclerView(viewModel)
+        observeFilmSelected(viewModel)
 
         return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        (requireActivity() as MainActivity).changeVisibilityOfBottomNavigation(true)
     }
 
     private fun FragmentFilmsFavoritesBinding.bindRecyclerView(
@@ -36,6 +45,16 @@ class FilmsFavoritesFragment: Fragment() {
 
         viewModel.filmFavoritesFlow.observe(viewLifecycleOwner) { films ->
             films.let { filmAdapter.submitList(it) }
+        }
+    }
+
+    private fun observeFilmSelected(viewModel: FilmFavoritesViewModel) {
+        viewModel.favoriteFilmSelected.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let {
+                val action =
+                    FilmsFavoritesFragmentDirections.actionFilmsFavoritesFragmentToFilmDetailsFragment()
+                findNavController().navigate(action)
+            }
         }
     }
 }

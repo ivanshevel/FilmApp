@@ -14,6 +14,7 @@ import coil.ImageLoader
 import coil.load
 import coil.request.ImageRequest
 import com.ishevel.filmapp.Injection
+import com.ishevel.filmapp.MainActivity
 import com.ishevel.filmapp.R
 import com.ishevel.filmapp.data.FilmData
 import com.ishevel.filmapp.databinding.FragmentFilmDetailsBinding
@@ -22,7 +23,6 @@ import kotlinx.coroutines.launch
 
 
 class FilmDetailsFragment : Fragment() {
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -53,6 +53,12 @@ class FilmDetailsFragment : Fragment() {
         binding.bindCastRecyclerView(viewModel)
 
         return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        (requireActivity() as MainActivity).changeVisibilityOfBottomNavigation(false)
     }
 
     private fun FragmentFilmDetailsBinding.bindCastRecyclerView(

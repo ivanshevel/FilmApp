@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import com.ishevel.filmapp.Injection
+import com.ishevel.filmapp.MainActivity
 import com.ishevel.filmapp.databinding.FragmentFilmsListBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -32,6 +33,12 @@ class FilmsListFragment : Fragment() {
         observeFilmSelected(viewModel)
 
         return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        (requireActivity() as MainActivity).changeVisibilityOfBottomNavigation(true)
     }
 
     private fun FragmentFilmsListBinding.bindRecyclerView(

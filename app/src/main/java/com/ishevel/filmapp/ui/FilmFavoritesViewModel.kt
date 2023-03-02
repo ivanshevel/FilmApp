@@ -17,7 +17,7 @@ class FilmFavoritesViewModel(
     val favoriteFilmSelected: LiveData<UiAction.UiEvent<Unit>> by lazy { _favoriteFilmSelected }
 
     fun onFilmClicked(film: Film) {
-        filmsRepository.setSelectedFavoriteFilm(film)
+        filmsRepository.setSelectedFilm(film)
         _favoriteFilmSelected.value = UiAction.UiEvent(Unit)
     }
 }
